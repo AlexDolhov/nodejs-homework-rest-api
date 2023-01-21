@@ -24,29 +24,27 @@ const contactSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: 'user',
+      required: true,
+    },
   },
   { versionKey: false }
 );
 
 contactSchema.post('save', handleMongooseError);
 
-// const addSchema = Joi.object({
-//   name: Joi.string().required(),
-//   email: Joi.string().required(),
-//   phone: Joi.string().pattern(phoneRegexp).required(),
-//   favourite: Joi.boolean(),
-// });
-
 const addSchema = Joi.object({
   name: Joi.string().min(3).max(30).required(),
   email: Joi.string()
     .email({
       minDomainSegments: 2,
-      tlds: { allow: ['com', 'net', 'ca', 'uk'] },
+      tlds: { allow: ['com', 'net', 'ca', 'uk', 'ua', 'org'] },
     })
     .required(),
   phone: Joi.string().pattern(phoneRegexp).required(),
-  favourite: Joi.boolean(),
+  favorite: Joi.boolean(),
 });
 
 const updateFavoriteSchema = Joi.object({
