@@ -33,6 +33,8 @@ const signup = async (req, res) => {
   });
 };
 
+const verify = async (req, res) => {};
+
 const login = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
@@ -121,6 +123,7 @@ const updateAvatar = async (req, res) => {
 
 module.exports = {
   signup: ctrlWrapper(signup),
+  verify: ctrlWrapper(verify),
   login: ctrlWrapper(login),
   getCurrent: ctrlWrapper(getCurrent),
   logout: ctrlWrapper(logout),
