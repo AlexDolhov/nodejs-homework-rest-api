@@ -59,6 +59,31 @@ const verify = async (req, res) => {
   res.json({ message: 'Verification successful' });
 };
 
+const reverify = async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    throw HttpError(400, 'Missing required field email');
+  }
+
+  const user = await User.findOne({ email });
+  if (user.verify) {
+    throw HttpError(400, 'Verification has already been passed');
+  }
+
+  const verificationToken = nanoid();
+  await User.findByIdAndUpdate(user._id, { verificationToken });
+
+  const verifyEmail = {
+    to: email,
+    subject: 'Verify your email',
+    html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${verificationToken}">Click to verify your email</a>`,
+  };
+
+  await sendEmail(verifyEmail);
+
+  res.json({ message: 'Verification email sent' });
+};
+
 const login = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
@@ -153,6 +178,7 @@ const updateAvatar = async (req, res) => {
 module.exports = {
   signup: ctrlWrapper(signup),
   verify: ctrlWrapper(verify),
+  reverify: ctrlWrapper(reverify),
   login: ctrlWrapper(login),
   getCurrent: ctrlWrapper(getCurrent),
   logout: ctrlWrapper(logout),
